@@ -1,0 +1,56 @@
+import os, glob, csv, docx
+with open('Conclusion.csv', 'w',newline='') as csvfile:
+ Writer= csv.writer(csvfile)
+ Writer.writerow(["Number","File_Name","Word","Passage"])
+ path = 'C:\converted'
+ CountFiles = 0
+ CountPara = 0
+ count = 0
+ ListOfTargets = ['BU BMW', 'TC','BU audit coordinator','BU','QA','QM','QM BU BMW','SE','Project management','Operations', 'Controlling', 'Customer service', 'Resident', 'Head of BU','SQM','D&D','Sales','M1','C1','C3','C4','C5a','C5b','C6','S1a','S1b','S2','S6','C1.1','C4','C5','C11']
+ #LookupValue = input("enter lookup value: ")
+ #LookupValue = 'bu'
+
+ for filename in glob.glob(os.path.join(path, '*.docx')):
+  CountFiles = CountFiles + 1
+  #opfy = open(filename, 'r')  # open in readonly mode
+  if '$' in filename:continue
+  #if os.stat(filename).st_size > 0:
+  else:
+   opfy = docx.Document(filename)
+   print(filename)
+
+  for LookupValue in ListOfTargets:
+   
+   for para in opfy.paragraphs:
+    #print(para.text)
+    if para.text == "": continue
+    else:
+     LowerPara = para.text.lower()
+     #if LookupValue.lower() in LowerPara:
+     for word in LowerPara.split():
+      if LookupValue.lower() == word:
+       count = count + 1
+       CountPara = CountPara + 1
+       Writer.writerow([count,filename,LookupValue,para.text.encode("utf-8")])
+   
+   for table in opfy.tables:
+    for row in table.rows:
+     for cell in row.cells:
+      for paragraph in cell.paragraphs:
+       if paragraph.text == "": continue
+       
+       else:
+        Lowerparagraph = paragraph.text.lower()
+        for word in Lowerparagraph.split():
+         if LookupValue.lower() == word:
+        #if LookupValue.lower() in LowerPara:
+         
+          count = count + 1
+          CountPara = CountPara + 1
+          Writer.writerow([count,filename,LookupValue,paragraph.text.encode("utf-8")])
+             
+       
+print("There were",CountFiles,"Files")
+print("There were", CountPara, "Paragraphs matching" )
+print("There were", count, "words matching" )
+
